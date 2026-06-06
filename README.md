@@ -28,18 +28,16 @@ To develop and study an event-driven scheduling framework for future 6G networks
 │
 ├── simulation/
 │   └── simpy_demo.py           # Event-driven SimPy simulation
-│
+│   └── network_model.py        # 5-node NetworkX graph cod
 ├── notebooks/
-│   └── python_basics.py        # Python fundamentals practice
+│   └── equations.ipynb         
 │
-├── notes/
+├── paper/
 │   └── important_notes.md      # Nash Equilibrium + Stackelberg + Modbus notes
 │
 ├── results/
-│   └── network_topology.png    # 5-node network graph output
+│   └── iot_network.png    # 5-node network graph output
 │
-├── week1/
-│   └── network_topology.py     # 5-node NetworkX graph code
 │
 ├── requirements.txt
 └── README.md

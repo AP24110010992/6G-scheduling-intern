@@ -1,28 +1,71 @@
 import networkx as nx
+import matplotlib.pyplot as plt
 import random
+import os
 
-def create_iot_network():
-    G = nx.barabasi_albert_graph(50, 3)
+# Create results folder if it doesn't exist
+os.makedirs("results", exist_ok=True)
 
-    for node in G.nodes():
-        G.nodes[node]["vulnerability"] = round(random.uniform(0.1, 1.0), 2)
-        G.nodes[node]["status"] = "safe"
+# Create a 50-node IoT network
+G = nx.barabasi_albert_graph(50, 2)
 
-    return G
+# Add device information
+for node in G.nodes():
+    G.nodes[node]["risk"] = round(random.uniform(0.1, 1.0), 2)
+    G.nodes[node]["status"] = "safe"
 
+# Print network summary
+print("50-Node IoT Network")
+print("-" * 30)
+print("Total Nodes :", G.number_of_nodes())
+print("Total Edges :", G.number_of_edges())
 
-if __name__ == "__main__":
-    network = create_iot_network()
+print("\nSample Device Information:")
+count = 0
 
-    print("Total Nodes:", network.number_of_nodes())
-    print("Total Edges:", network.number_of_edges())
+for node, data in G.nodes(data=True):
+    print(f"Device {node}: {data}")
 
-    print("\nSample Nodes:")
-    count = 0
+    count += 1
+    if count == 5:
+        break
 
-    for node, data in network.nodes(data=True):
-        print(node, data)
+# Assign colors based on risk
+colors = []
 
-        count += 1
-        if count == 5:
-            break
+for node in G.nodes():
+
+    risk = G.nodes[node]["risk"]
+
+    if risk < 0.4:
+        colors.append("green")
+
+    elif risk < 0.7:
+        colors.append("yellow")
+
+    else:
+        colors.append("red")
+
+# Draw network
+plt.figure(figsize=(10, 8))
+
+pos = nx.spring_layout(G, seed=42)
+
+nx.draw(
+    G,
+    pos,
+    with_labels=True,
+    node_color=colors,
+    node_size=500,
+    font_size=7,
+    edge_color="gray"
+)
+
+plt.title("50-Node IoT Network")
+
+plt.savefig("results/50_node_network.png")
+
+plt.show()
+
+print("\nNetwork image saved to:")
+print("results/50_node_network.png")

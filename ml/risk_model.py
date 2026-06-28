@@ -1,3 +1,4 @@
+import joblib
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
@@ -27,6 +28,9 @@ y = data["label"]
 encoder = LabelEncoder()
 
 X["proto"] = encoder.fit_transform(X["proto"])
+
+# Save the encoder
+joblib.dump(encoder, "ml/protocol_encoder.pkl")
 
 X_train, X_test, y_train, y_test = train_test_split(
     X,
@@ -58,6 +62,11 @@ accuracy = accuracy_score(y_test, y_pred)
 precision = precision_score(y_test, y_pred)
 recall = recall_score(y_test, y_pred)
 f1 = f1_score(y_test, y_pred)
+
+# Save trained model
+joblib.dump(model, "ml/random_forest_model.pkl")
+
+print("Model saved successfully!")
 
 # Probability predictions for ROC-AUC
 y_prob = model.predict_proba(X_test)[:, 1]

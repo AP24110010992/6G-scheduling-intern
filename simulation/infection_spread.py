@@ -1,48 +1,27 @@
 import random
-from iot_network import create_iot_network
 
-# Create IoT network
-G = create_iot_network()
 
-# Select one infected node
-infected = random.choice(list(G.nodes()))
-
-G.nodes[infected]["status"] = "infected"
-
-print("Initially Infected Node:", infected)
-
-# Simulate spread for 5 rounds
-for round_number in range(1, 6):
-
-    print("\nRound", round_number)
+def spread_infection(G, infection_probability=0.15):
+    """
+    Spread infection from infected devices to neighbors.
+    """
 
     new_infections = []
 
     for node in G.nodes():
 
-        if G.nodes[node]["status"] == "infected":
+        if G.nodes[node]["status"] in ["infected", "compromised"]:
 
-            neighbours = list(G.neighbors(node))
+            for neighbour in G.neighbors(node):
 
-            for neighbour in neighbours:
+                if G.nodes[neighbour]["status"] == "normal":
 
-                if G.nodes[neighbour]["status"] == "safe":
-
-                    # 30% chance of infection
-                    if random.random() < 0.3:
+                    if random.random() < infection_probability:
 
                         new_infections.append(neighbour)
 
-    # Update infections
     for node in new_infections:
 
         G.nodes[node]["status"] = "infected"
 
-    infected_nodes = [
-        node
-        for node in G.nodes()
-        if G.nodes[node]["status"] == "infected"
-    ]
-
-    print("Total Infected Devices:", len(infected_nodes))
-    print("Infected Nodes:", infected_nodes)
+    return len(new_infections)

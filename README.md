@@ -1,103 +1,113 @@
-# Event-Driven 6G Scheduling using SimPy + Sionna
+# IoT Security Simulation using Machine Learning and Reinforcement Learning
 
-**Project Goal**
+## Project Overview
 
-To develop and study an event-driven scheduling framework for future 6G networks using discrete-event simulation (SimPy), graph-based network modeling (NetworkX), and physical-layer channel simulation (Sionna), with intelligent resource management techniques based on Game Theory and Machine Learning.
+This project implements an intelligent IoT security framework that simulates cyber attacks on an Industrial IoT network and evaluates multiple defense strategies. The framework combines graph-based network modeling, machine learning, deep learning, and reinforcement learning to improve network security.
 
----
-
-## Team Members
-
-| Name | Roll Number |
-|---|---|
-| Snehitha | AP24110011008 |
-| Shahistha Anjum | AP24110010993 |
-| Shanmukh | AP24110011010 |
-| Sandeep | AP24110010992 |
-
-**Mentor:** Dr. Ch Anil Carie
-**Institution:** SRM University AP, Amaravati
-**Programme:** Summer Research Internship 2025 (8 Weeks)
+The project was developed as part of a research internship on IoT Security.
 
 ---
 
-## Repository Structure
+## Features
+
+* 50-node IoT network simulation using NetworkX
+* Random, targeted, and burst attack simulation
+* Defender engine for monitoring and protecting devices
+* Random Forest-based attack detection
+* Multi-Layer Perceptron (MLP) attack classifier
+* Deep Q-Network (DQN) reinforcement learning defender
+* Performance evaluation and visualization
+* Modular project structure for easy extension
+
+---
+
+## Project Architecture
 
 ```
-6G-Scheduling-Intern/
+                IoT Network
+                     │
+                     ▼
+             Attack Engine
+                     │
+                     ▼
+            Defender Engine
+                     │
+     ┌───────────────┼───────────────┐
+     ▼               ▼               ▼
+Random Forest       MLP         RL (DQN)
+     │               │               │
+     └───────────────┼───────────────┘
+                     ▼
+           Performance Evaluation
+```
+
+---
+
+## Project Structure
+
+```
+iot-security-intern/
 │
+├── dataset/
+├── ml/
+├── rl/
 ├── simulation/
-│   └── simpy_demo.py           # Event-driven SimPy simulation
-│   └── network_model.py        # 5-node NetworkX graph cod
-├── notebooks/
-│   └── equations.ipynb         
-│
-├── paper/
-│   └── important_notes.md      # Nash Equilibrium + Stackelberg + Modbus notes
-│
 ├── results/
-│   └── iot_network.png    # 5-node network graph output
-│
-│
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## Week 1 Tasks Completed
+## Technologies Used
 
-* Installed Python, VS Code, Git, and required libraries (NetworkX, SimPy, Matplotlib)
-* Created GitHub repository and set up project structure
-* Learned Python fundamentals — variables, loops, functions, lists, dictionaries
-* Built a 5-node IoT network topology using NetworkX
-* Implemented a basic event-driven simulation using SimPy to model packet transmission and attacker behavior
-* Studied Game Theory concepts — Nash Equilibrium and Stackelberg Game
-* Analyzed the Modbus dataset structure, features, and attack categories
-* Maintained project progress using GitHub
-
----
-
-## Week 1 Topics Learned
-
-- Python Fundamentals (variables, loops, functions, lists, dictionaries)
-- NetworkX (graph creation, node/edge attributes, visualization)
-- SimPy (discrete-event simulation, processes, timeout)
-- Game Theory (Nash Equilibrium, Stackelberg Game)
-- Modbus Dataset Overview (features, attack types, purpose)
+* Python
+* NetworkX
+* NumPy
+* Pandas
+* Matplotlib
+* Scikit-learn
+* TensorFlow / Keras
+* Gymnasium
+* Stable-Baselines3
 
 ---
 
-## Dataset Reference
+## Workflow
 
-**CIC Modbus 2023 Dataset**
-Source: [https://www.unb.ca/cic/datasets/modbus-2023.html](https://www.unb.ca/cic/datasets/modbus-2023.html)
-Purpose: Industrial IoT attack detection — used to understand attack patterns (DoS, Scanning, Injection) for future ML-based risk classification.
-
----
-
-## Week 2 Plan
-
-- Graph Theory (centrality, density, connectivity)
-- 50-Node IoT Network creation
-- IoT Security attacks (DoS, DDoS, Reconnaissance)
-- Attack simulation using NetworkX
-- Network monitoring and defender logic
+1. Create a 50-node IoT network.
+2. Simulate cyber attacks.
+3. Apply defender strategies.
+4. Detect attacks using Machine Learning models.
+5. Train a Reinforcement Learning agent.
+6. Compare defender performance.
+7. Generate performance graphs.
 
 ---
 
-## How to Run
+## Results
 
-```bash
-# Install dependencies
-pip install -r requirements.txt
+The project generates:
 
-# Run network topology
-python week1/network_topology.py
+* Network visualization
+* Average Risk vs Round
+* Compromised Ratio vs Round
+* Protected Nodes vs Round
+* Simulation logs
+* Trained ML and RL models
 
-# Run SimPy simulation
-python simulation/simpy_demo.py
+---
 
-# Run Python basics
-python notebooks/python_basics.py
-```
+## Future Improvements
+
+* Larger IoT networks
+* Graph Neural Networks (GNNs)
+* Multi-agent reinforcement learning
+* Real-time streaming data
+* Cloud deployment
+
+---
+
+## Author
+
+Developed as part of an IoT Security Research Internship.

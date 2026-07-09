@@ -1,47 +1,52 @@
+import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
-# ---------------------------
-# Figure 1: Infection Spread
-# ---------------------------
+os.makedirs("results", exist_ok=True)
 
-rounds = [0, 1, 2, 3, 4, 5]
-infected_devices = [1, 2, 3, 5, 7, 9]   # Replace with your actual values
+# Load simulation results
+df = pd.read_csv("results/simulation_results.csv")
 
-plt.figure(figsize=(6, 4))
+# -------------------------------
+# Average Risk
+# -------------------------------
 
-plt.plot(rounds, infected_devices, marker="o")
-
-plt.title("Infection Spread Over Time")
+plt.figure(figsize=(8,5))
+plt.plot(df["Round"], df["Average Risk"], linewidth=2)
+plt.title("Average Risk Over Time")
 plt.xlabel("Round")
-plt.ylabel("Number of Infected Devices")
+plt.ylabel("Average Risk")
 plt.grid(True)
+plt.tight_layout()
+plt.savefig("results/average_risk.png")
+plt.close()
 
-plt.savefig("results/infection_spread.png")
+# -------------------------------
+# Compromised Ratio
+# -------------------------------
 
-plt.show()
+plt.figure(figsize=(8,5))
+plt.plot(df["Round"], df["Compromised Ratio"], linewidth=2)
+plt.title("Compromised Ratio Over Time")
+plt.xlabel("Round")
+plt.ylabel("Compromised Ratio")
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("results/compromised_ratio.png")
+plt.close()
 
-print("Saved: results/infection_spread.png")
+# -------------------------------
+# Protected Nodes
+# -------------------------------
 
+plt.figure(figsize=(8,5))
+plt.plot(df["Round"], df["Protected Nodes"], linewidth=2)
+plt.title("Protected Nodes Over Time")
+plt.xlabel("Round")
+plt.ylabel("Protected Nodes")
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("results/protected_nodes.png")
+plt.close()
 
-# ---------------------------
-# Figure 2: Attack Outcomes
-# ---------------------------
-
-detected = 36      # Replace with your actual value
-successful = 64   # Replace with your actual value
-
-labels = ["Detected", "Successful"]
-values = [detected, successful]
-
-plt.figure(figsize=(6, 4))
-
-plt.bar(labels, values)
-
-plt.title("Attack Outcomes")
-plt.ylabel("Number of Attacks")
-
-plt.savefig("results/attack_outcomes.png")
-
-plt.show()
-
-print("Saved: results/attack_outcomes.png")
+print("Graphs saved in results folder.")

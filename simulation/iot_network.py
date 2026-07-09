@@ -1,71 +1,146 @@
+# simulation/iot_network.py
+# ---------------------------------------------------------
+# 50-Node IoT Network Generator
+# Summer Research Internship
+# ---------------------------------------------------------
+
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
 import os
 
-# Create results folder if it doesn't exist
+random.seed(42)
+
 os.makedirs("results", exist_ok=True)
 
-# Create a 50-node IoT network
-G = nx.barabasi_albert_graph(50, 2)
 
-# Add device information
-for node in G.nodes():
-    G.nodes[node]["risk"] = round(random.uniform(0.1, 1.0), 2)
-    G.nodes[node]["status"] = "safe"
+def create_iot_network(num_nodes=50, seed=42):
+    """
+    Creates a Barabasi-Albert scale-free IoT network.
+    """
 
-# Print network summary
-print("50-Node IoT Network")
-print("-" * 30)
-print("Total Nodes :", G.number_of_nodes())
-print("Total Edges :", G.number_of_edges())
+    G = nx.barabasi_albert_graph(
+        n=num_nodes,
+        m=2,
+        seed=seed
+    )
 
-print("\nSample Device Information:")
-count = 0
+    # Rename nodes
+    mapping = {
+        i: f"Device{i+1}"
+        for i in range(num_nodes)
+    }
 
-for node, data in G.nodes(data=True):
-    print(f"Device {node}: {data}")
+    G = nx.relabel_nodes(G, mapping)
 
-    count += 1
-    if count == 5:
-        break
+    # Assign attributes
+    for node in G.nodes():
 
-# Assign colors based on risk
-colors = []
+        G.nodes[node]["risk_score"] = round(
+            random.uniform(0.1, 0.9), 2
+        )
 
-for node in G.nodes():
+        G.nodes[node]["vulnerability"] = round(
+            random.uniform(0.1, 0.9), 2
+        )
 
-    risk = G.nodes[node]["risk"]
+        G.nodes[node]["status"] = "normal"
 
-    if risk < 0.4:
-        colors.append("green")
+        G.nodes[node]["packets_sent"] = 0
 
-    elif risk < 0.7:
-        colors.append("yellow")
+    return G
 
-    else:
-        colors.append("red")
 
-# Draw network
-plt.figure(figsize=(10, 8))
+def network_summary(G):
 
-pos = nx.spring_layout(G, seed=42)
+    print("=" * 45)
+    print("IoT Network Summary")
+    print("=" * 45)
 
-nx.draw(
+    print("Nodes :", G.number_of_nodes())
+    print("Edges :", G.number_of_edges())
+    print("Density :", round(nx.density(G), 4))
+    print("Connected :", nx.is_connected(G))
+
+    print("\nSample Devices\n")
+
+    for node in list(G.nodes())[:5]:
+
+        print(
+            node,
+            G.nodes[node]
+        )
+
+
+def visualize_network(
     G,
-    pos,
-    with_labels=True,
-    node_color=colors,
-    node_size=500,
-    font_size=7,
-    edge_color="gray"
-)
+    path="results/network.png"
+):
 
-plt.title("50-Node IoT Network")
+    pos = nx.spring_layout(
+        G,
+        seed=42
+    )
 
-plt.savefig("results/50_node_network.png")
+    colors = []
 
-plt.show()
+    sizes = []
 
-print("\nNetwork image saved to:")
-print("results/50_node_network.png")
+    for node in G.nodes():
+
+        risk = G.nodes[node]["risk_score"]
+
+        if risk < 0.35:
+            colors.append("green")
+
+        elif risk < 0.70:
+            colors.append("yellow")
+
+        else:
+            colors.append("red")
+
+        sizes.append(
+            200 + 40 * G.degree(node)
+        )
+
+    plt.figure(figsize=(12, 9))
+
+    nx.draw_networkx_edges(
+        G,
+        pos,
+        alpha=0.3
+    )
+
+    nx.draw_networkx_nodes(
+        G,
+        pos,
+        node_color=colors,
+        node_size=sizes
+    )
+
+    nx.draw_networkx_labels(
+        G,
+        pos,
+        font_size=6
+    )
+
+    plt.title("50-Node IoT Network")
+
+    plt.axis("off")
+
+    plt.tight_layout()
+
+    plt.savefig(path, dpi=150)
+
+    plt.close()
+
+    print(f"\nSaved: {path}")
+
+
+if __name__ == "__main__":
+
+    G = create_iot_network()
+
+    network_summary(G)
+
+    visualize_network(G)

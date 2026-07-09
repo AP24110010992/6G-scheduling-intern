@@ -1,95 +1,85 @@
-import random
+# simulation/main_sim.py
+# ---------------------------------------------------------
+# Main IoT Security Simulation
+# ---------------------------------------------------------
+
 import csv
+import os
+
 from iot_network import create_iot_network
+from attack_engine import (
+    attack_random,
+    attack_targeted,
+    attack_burst
+)
+from defender_engine import (
+    select_monitor_nodes,
+    defend_network,
+    network_stats
+)
 
-# Create IoT network
-G = create_iot_network()
+os.makedirs("results", exist_ok=True)
 
-# Number of simulation rounds
-total_rounds = 100
 
-# Defender monitors 5 random nodes
-monitored_nodes = random.sample(list(G.nodes()), 5)
+def run_simulation(rounds=100):
 
-print("Monitored Nodes:")
-print(monitored_nodes)
-print()
+    G = create_iot_network()
 
-# Counters
-detected_attacks = 0
-successful_attacks = 0
-missed_attacks = 0
+    logs = []
 
-# Store attack logs
-attack_logs = []
+    print("=" * 50)
+    print("Starting IoT Security Simulation")
+    print("=" * 50)
 
-# Run simulation
-for round_number in range(total_rounds):
+    for t in range(1, rounds + 1):
 
-    # Attacker selects the node with highest vulnerability
-    target_node = max(
-        G.nodes(),
-        key=lambda node: G.nodes[node]["vulnerability"]
-    )
+        # Defender chooses important nodes
+        monitored = select_monitor_nodes(G)
 
-    vulnerability = G.nodes[target_node]["vulnerability"]
+        # Attack Strategy
+        if t % 15 == 0:
+            attack_log = attack_burst(G, t)
 
-    # Basic detection probability
-    detection_probability = 1 - vulnerability
+        elif t % 5 == 0:
+            attack_log = attack_targeted(G, t)
 
-    # Increase detection chance if node is monitored
-    if target_node in monitored_nodes:
+        else:
+            attack_log = attack_random(G, t)
 
-        detection_probability = min(
-            0.9,
-            detection_probability + 0.3
+        # Defender reacts
+        detected = defend_network(G, monitored)
+
+        # Network statistics
+        stats = network_stats(G)
+
+        logs.append({
+            "Round": t,
+            "Average Risk": stats["avg_risk"],
+            "Compromised Ratio": stats["compromised_ratio"],
+            "Protected Nodes": stats["protected_nodes"],
+            "Detected": detected
+        })
+
+        print(
+            f"Round {t:3d} | "
+            f"Risk={stats['avg_risk']:.3f} | "
+            f"Compromised={stats['compromised_ratio']:.3f} | "
+            f"Protected={stats['protected_nodes']}"
         )
 
-    # Decide attack outcome
-    if random.random() < detection_probability:
+    csv_file = "results/simulation_results.csv"
 
-        outcome = "Detected"
-        detected_attacks += 1
+    with open(csv_file, "w", newline="") as file:
 
-    else:
+        writer = csv.DictWriter(file, fieldnames=logs[0].keys())
 
-        outcome = "Successful"
-        successful_attacks += 1
+        writer.writeheader()
 
-        G.nodes[target_node]["status"] = "compromised"
+        writer.writerows(logs)
 
-    # Save log
-    attack_logs.append([
-        round_number,
-        target_node,
-        vulnerability,
-        outcome
-    ])
+    print("\nSimulation Complete")
+    print(f"Results saved to {csv_file}")
 
 
-# Save logs to CSV file
-with open("results/attack_logs.csv", "w", newline="") as file:
-
-    writer = csv.writer(file)
-
-    writer.writerow([
-        "Round",
-        "Target Node",
-        "Vulnerability",
-        "Outcome"
-    ])
-
-    writer.writerows(attack_logs)
-
-
-# Print results
-print("Simulation Finished")
-print()
-
-print("Total Rounds       :", total_rounds)
-print("Detected Attacks   :", detected_attacks)
-print("Successful Attacks :", successful_attacks)
-print("Missed Attacks     :", missed_attacks)
-
-print()
-print("Attack logs saved to results/attack_logs.csv")
+if __name__ == "__main__":
+    run_simulation()

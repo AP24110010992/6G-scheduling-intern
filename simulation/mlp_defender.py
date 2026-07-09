@@ -1,43 +1,95 @@
-import joblib
-import pandas as pd
-from tensorflow.keras.models import load_model
-
-# Load trained MLP model
-model = load_model("ml/best_mlp_model.keras")
-
-# Load protocol encoder
-encoder = joblib.load("ml/protocol_encoder.pkl")
-
-print("MLP model loaded successfully!")
+# simulation/mlp_defender.py
 
 import joblib
 import pandas as pd
 from tensorflow.keras.models import load_model
 
-# Load model
-model = load_model("ml/best_mlp_model.keras")
+# --------------------------------------------------
+# Load trained MLP model and encoder
+# --------------------------------------------------
 
-# Load encoder
-encoder = joblib.load("ml/protocol_encoder.pkl")
+MODEL_PATH = "ml/best_mlp_model.keras"
+ENCODER_PATH = "ml/protocol_encoder.pkl"
+
+model = load_model(MODEL_PATH)
+encoder = joblib.load(ENCODER_PATH)
+
+print("✓ MLP Defender loaded successfully")
 
 
-def predict_attack(duration, protocol, sbytes, dbytes):
+# --------------------------------------------------
+# Predict attack probability
+# --------------------------------------------------
 
-    protocol = encoder.transform([protocol])[0]
+def predict_attack_probability(duration, protocol, sbytes, dbytes):
+    """
+    Returns the probability that the traffic is malicious.
+
+    Parameters
+    ----------
+    duration : float
+    protocol : str
+    sbytes : int
+    dbytes : int
+
+    Returns
+    -------
+    float
+        Probability between 0 and 1
+    """
+
+    protocol_encoded = encoder.transform([protocol])[0]
 
     sample = pd.DataFrame({
         "dur": [duration],
-        "proto": [protocol],
+        "proto": [protocol_encoded],
         "sbytes": [sbytes],
         "dbytes": [dbytes]
     })
 
-    prediction = model.predict(sample, verbose=0)
+    probability = float(
+        model.predict(sample, verbose=0)[0][0]
+    )
 
-    if prediction[0][0] > 0.5:
-        print("Attack Detected")
+    return probability
+
+
+# --------------------------------------------------
+# Classify traffic
+# --------------------------------------------------
+
+def predict_attack(duration, protocol, sbytes, dbytes, threshold=0.5):
+    """
+    Returns:
+        (is_attack, probability)
+    """
+
+    probability = predict_attack_probability(
+        duration,
+        protocol,
+        sbytes,
+        dbytes
+    )
+
+    return probability >= threshold, probability
+
+
+# --------------------------------------------------
+# Example usage
+# --------------------------------------------------
+
+if __name__ == "__main__":
+
+    attack, probability = predict_attack(
+        duration=2,
+        protocol="tcp",
+        sbytes=500,
+        dbytes=200
+    )
+
+    print(f"Attack Probability : {probability:.4f}")
+
+    if attack:
+        print("Prediction : Attack Detected")
     else:
-        print("Normal Traffic")
-
-
-predict_attack(2, "tcp", 500, 200)
+        print("Prediction : Normal Traffic")

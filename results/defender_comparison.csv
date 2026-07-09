@@ -1,0 +1,5 @@
+Defender,Method,Strength,Weakness
+Static,Rule Based,Simple implementation,Not adaptive
+Random Forest,Supervised Learning,Fast prediction,Needs labeled data
+MLP,Deep Learning,Handles nonlinear patterns,Requires more training
+RL (DQN),Reinforcement Learning,Learns optimal strategy,Longer training time

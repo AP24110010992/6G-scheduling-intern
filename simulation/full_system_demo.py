@@ -3,7 +3,10 @@
 import os
 import csv
 import random
+# Read random seed from environment (default = 42)
+SEED = int(os.getenv("SIM_SEED", "42"))
 
+random.seed(SEED)
 from iot_network import create_iot_network
 
 from attack_engine import (
@@ -37,7 +40,12 @@ os.makedirs("results", exist_ok=True)
 # Create IoT Network
 # -------------------------------------------------------
 
-G = create_iot_network()
+NETWORK_SIZE = 50
+
+G = create_iot_network(
+    num_nodes=NETWORK_SIZE,
+    seed=SEED
+)
 
 # -------------------------------------------------------
 # Initial Infection
@@ -47,7 +55,7 @@ first_infected = random.choice(list(G.nodes()))
 G.nodes[first_infected]["status"] = "infected"
 
 print("=" * 65)
-print("FULL IoT SECURITY DEMONSTRATION")
+print(f" FULL IoT SECURITY DEMONSTRATION ({NETWORK_SIZE} Nodes)")
 print("=" * 65)
 
 print(f"\nInitial infected device : {first_infected}\n")
@@ -213,7 +221,7 @@ for node in monitored:
 # SAVE RESULTS
 # =======================================================
 
-csv_path = "results/full_system_results.csv"
+csv_path = f"results/scalability_{NETWORK_SIZE}.csv"
 
 with open(csv_path, "w", newline="") as file:
 
@@ -248,6 +256,7 @@ print("FINAL SUMMARY")
 print("=" * 65)
 
 print(f"Rounds Executed      : {ROUNDS}")
+print(f"Network Size         : {NETWORK_SIZE}")
 print(f"Average Risk         : {final['avg_risk']:.3f}")
 print(f"Compromised Ratio    : {final['compromised_ratio']:.3f}")
 print(f"Protected Nodes      : {final['protected_nodes']}")

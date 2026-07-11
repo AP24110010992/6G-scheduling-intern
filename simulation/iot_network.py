@@ -9,8 +9,6 @@ import matplotlib.pyplot as plt
 import random
 import os
 
-random.seed(42)
-
 os.makedirs("results", exist_ok=True)
 
 
@@ -18,7 +16,8 @@ def create_iot_network(num_nodes=50, seed=42):
     """
     Creates a Barabasi-Albert scale-free IoT network.
     """
-
+    random.seed(seed)
+    
     G = nx.barabasi_albert_graph(
         n=num_nodes,
         m=2,
